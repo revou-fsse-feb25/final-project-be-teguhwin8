@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Device" ALTER COLUMN "lastLongDate" SET DATA TYPE TEXT,
+ALTER COLUMN "initialDate" SET DATA TYPE TEXT;

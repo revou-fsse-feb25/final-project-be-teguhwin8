@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title || 'Email' %></title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://ik.imagekit.io/dimdevs/TRAVL/logo-single.png?updatedAt=1755944468037"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #d5d5d5;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background-color: #001e60;
+        color: #ffffff;
+        padding: 20px;
+        text-align: center;
+      }
+      .header img {
+        max-width: 150px;
+        height: auto;
+      }
+      .header-text {
+        padding: 20px;
+        text-align: center;
+        border-bottom: 1px solid #dddddd;
+      }
+      .header-title {
+        margin: 0;
+        font-size: 24px;
+      }
+      .content {
+        padding: 20px;
+        color: #333333;
+      }
+      .content h2 {
+        font-size: 20px;
+        color: #001e60;
+        margin: 0 0 12px 0;
+      }
+      .content p {
+        font-size: 16px;
+        line-height: 1.5;
+        margin: 10px 0;
+      }
+      .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: bold;
+        color: #ffffff;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+      }
+      .badge-pre {
+        background: #f59e0b;
+      }
+      .badge-exact {
+        background: #10b981;
+      }
+      .badge-overdue {
+        background: #ef4444;
+      }
+      .summary {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+      }
+      .summary th,
+      .summary td {
+        text-align: left;
+        padding: 8px 10px;
+        font-size: 14px;
+        border-bottom: 1px solid #eeeeee;
+      }
+      .meta {
+        margin: 16px 0;
+        border: 1px solid #e6eaf2;
+        border-radius: 8px;
+        padding: 14px;
+        background: #fafbff;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        margin: 6px 0;
+        font-size: 14px;
+      }
+     .row .label {
+        color: #55627a;
+        flex: 1;
+      }
+      .row .value {
+        font-weight: bold;
+        color: #1c274c;
+        text-align: right;
+      }
+      .tips {
+        background: #fff9e6;
+        border: 1px solid #ffe7a3;
+        color: #5d4a00;
+        padding: 12px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        margin: 16px 0;
+      }
+      .button {
+        display: inline-block;
+        padding: 12px 20px;
+        margin: 10px 8px 0 0;
+        background-color: #001e60;
+        color: #ffffff !important;
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 15px;
+      }
+      .button.secondary {
+        background: #eef2ff;
+        color: #001e60 !important;
+        border: 1px solid #cdd6ff;
+      }
+      .divider {
+        height: 1px;
+        background: #eeeeee;
+        margin: 20px 0;
+      }
+      .footer {
+        background-color: #f4f4f4;
+        padding: 10px;
+        text-align: center;
+        font-size: 14px;
+        color: #666666;
+      }
+      .footer a {
+        color: #001e60;
+        text-decoration: none;
+      }
+      a {
+        color: #001e60;
+      }
+    </style>
+  </head>
+  <body
+    style="background-color: #d5d5d5; padding-top: 50px; padding-bottom: 50px"
+  >
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <img
+          src="https://ik.imagekit.io/dimdevs/TRAVL/logo-primary.png?updatedAt=1755944402803"
+          alt="TRAVL"
+        />
+      </div>
+
+      <!-- Title -->
+      <div class="header-text">
+        <h1 class="header-title"><%= title || 'Notification' %></h1>
+      </div>
+
+      <!-- ===== BODY START ===== -->
+      <div class="content">

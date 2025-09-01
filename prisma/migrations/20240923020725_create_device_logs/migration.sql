@@ -1,0 +1,31 @@
+-- CreateTable
+CREATE TABLE "DeviceLogs" (
+    "id" TEXT NOT NULL,
+    "batteryVoltage" TEXT,
+    "engineIgnitionStatus" TEXT,
+    "eventPriorityEnum" TEXT,
+    "externalPowersourceVoltage" TEXT,
+    "gnssStateEnum" TEXT,
+    "gnssStatus" TEXT,
+    "gsmOperatorCode" TEXT,
+    "gsmSignalLevel" TEXT,
+    "movementStatus" TEXT,
+    "positionAltitude" TEXT,
+    "positionDirection" TEXT,
+    "positionHdop" TEXT,
+    "positionLatitude" TEXT,
+    "positionLongitude" TEXT,
+    "positionPdop" TEXT,
+    "positionSatellites" TEXT,
+    "positionSpeed" TEXT,
+    "positionValid" TEXT,
+    "serverTimestamp" TEXT,
+    "sleepModeEnum" TEXT,
+    "vehicleMileage" TEXT,
+    "read_at" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+
+    CONSTRAINT "DeviceLogs_pkey" PRIMARY KEY ("id")
+);

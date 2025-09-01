@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Trips" ALTER COLUMN "arivalCity" DROP NOT NULL,
+ALTER COLUMN "arivalId" DROP NOT NULL,
+ALTER COLUMN "departureCity" DROP NOT NULL,
+ALTER COLUMN "departureId" DROP NOT NULL;

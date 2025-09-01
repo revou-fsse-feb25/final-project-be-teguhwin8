@@ -1,0 +1,97 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  IMAGE_NAME: registry.gitlab.com/hijau-digital/tms/api/tms-api
+  TAG: $CI_COMMIT_SHORT_SHA
+  NODE_ENV: production
+
+# ============================
+# 🧱 Build CI image (optional)
+# ============================
+build-ci-image:
+  stage: build
+  image: docker:24.0.5-cli
+  services:
+    - docker:24.0.5-dind
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE/ci-image:latest -f Dockerfile.ci .
+    - docker push $CI_REGISTRY_IMAGE/ci-image:latest
+  only:
+    changes:
+      - Dockerfile.ci
+
+# ======================
+# 🔨 Build application image
+# ======================
+build:
+  stage: build
+  image: registry.gitlab.com/hijau-digital/tms/api/ci-image:latest
+  services:
+    - docker:24.0.5-dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - echo "===> Install dependencies"
+    - npm ci || npm install
+    - echo "===> Build Docker image"
+    - docker build -t $IMAGE_NAME:$TAG .
+    - docker tag $IMAGE_NAME:$TAG $IMAGE_NAME:latest
+    - docker push $IMAGE_NAME:$TAG
+    - docker push $IMAGE_NAME:latest
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+  only:
+    - v2-staging
+
+# ======================
+# 🚀 DEPLOY STAGE
+# ======================
+deploy:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+  script:
+    - |
+      echo "===> Starting SSH deploy to $DEPLOY_HOST"
+      ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_HOST "
+        set -e
+
+        echo '===> Using DEPLOY_DIR: $DEPLOY_DIR'
+        cd $DEPLOY_DIR
+
+        echo '===> Tag current image as rollback (if exists)'
+        docker image inspect $IMAGE_NAME:latest >/dev/null 2>&1 && \
+        docker tag $IMAGE_NAME:latest $IMAGE_NAME:rollback || \
+        echo 'No existing image to tag as rollback.'
+
+        echo '===> Pull latest image'
+        docker compose pull tms-api
+
+        echo '===> Try starting new container'
+        if docker compose up -d --no-deps tms-api; then
+          echo '✅ New version deployed successfully'
+        else
+          echo '❌ New version failed. Rolling back...'
+          docker tag $IMAGE_NAME:rollback $IMAGE_NAME:latest
+          docker compose up -d --no-deps tms-api
+        fi
+
+        echo '===> Running containers:'
+        docker ps -a
+
+        echo '===> Available images:'
+        docker images | grep tms-api || true
+
+        echo '===> ✅ Deployment script finished'
+      "
+  only:
+    - v2-staging

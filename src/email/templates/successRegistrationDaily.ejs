@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <%- include("./shared/header.ejs") %>
+  <body>
+    <table
+      class="email-wrapper"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      role="presentation"
+    >
+      <tr>
+        <td align="center">
+          <table
+            class="email-content"
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            role="presentation"
+          >
+            <!-- Email Body -->
+            <tr>
+              <td
+                class="email-body"
+                width="570"
+                cellpadding="0"
+                cellspacing="0"
+              >
+                <table
+                  class="email-body_inner"
+                  align="center"
+                  style="width: 100%;"
+                  cellpadding="0"
+                  cellspacing="0"
+                  role="presentation"
+                >
+                  <!-- Body content -->
+                  <tr>
+                    <td class="content-cell">
+                      <div class="f-fallback">
+                        <p>
+                          Halo Tim Roots Learning Center! <br /><br />
+
+                          Ini adalah ringkasan harian untuk member MyRootsy di
+                          pusat kita. <br />
+                          <% for (let i = 0; i < locals.members.length; i++) { %>
+                          <%= i + 1 %>. <%= locals.members[i].name %>, <%= locals.members[i].email %>, <%=locals.members[i].whatsappNumber %><br />
+                          <% } %>
+                          <br />
+                          <br />
+                          Cek segera untuk pembaruan terbaru dan pastikan hari mereka berjalan lancar!
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <%- include("./shared/footer.ejs") %>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

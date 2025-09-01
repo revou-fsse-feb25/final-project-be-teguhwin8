@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <%- include("./shared/header.ejs") %>
+  <body>
+    <table
+      class="email-wrapper"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      role="presentation"
+    >
+      <tr>
+        <td align="center">
+          <table
+            class="email-content"
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            role="presentation"
+          >
+            <!-- Email Body -->
+            <tr>
+              <td
+                class="email-body"
+                width="570"
+                cellpadding="0"
+                cellspacing="0"
+              >
+                <table
+                  class="email-body_inner"
+                  align="center"
+                  style="width: 100%;"
+                  cellpadding="0"
+                  cellspacing="0"
+                  role="presentation"
+                >
+                  <!-- Body content -->
+                  <tr>
+                    <td class="content-cell">
+                      <div class="f-fallback">
+                        <p>
+                          Hai <%= locals.name %>!<br/><br/>
+                          Anda telah berhasil didaftarkan oleh admin sekolah. Selamat datang di MyRootsy!<br/><br/>
+                          Login: <%= locals.email %><br/>
+                          Password: <%= locals.password %><br/><br/>
+
+                          Sekarang, Anda dapat mengakses dan memanfaatkan layanan kami. Segera lengkapi profil dan nikmati pengalaman MyRootsy Anda.
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <%- include("./shared/footer.ejs") %>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

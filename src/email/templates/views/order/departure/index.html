@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reminder Keberangkatan</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://ik.imagekit.io/dimdevs/TRAVL/logo-single.png?updatedAt=1755944468037"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+      }
+      .header {
+        background-color: #001e60;
+        color: #ffffff;
+        padding: 20px;
+        text-align: center;
+      }
+      .header img {
+        max-width: 160px;
+        height: auto;
+      }
+      .header-text {
+        padding: 16px 20px;
+        text-align: center;
+        border-bottom: 1px solid #eeeeee;
+      }
+      .header-title {
+        margin: 0;
+        font-size: 22px;
+        color: #001e60;
+      }
+      .content {
+        padding: 20px;
+        color: #333333;
+      }
+      .content h2 {
+        font-size: 18px;
+        color: #001e60;
+        margin: 0 0 8px 0;
+      }
+      .content p {
+        font-size: 15px;
+        line-height: 1.6;
+        margin: 8px 0;
+      }
+      .meta {
+        margin: 16px 0;
+        border: 1px solid #e6eaf2;
+        border-radius: 8px;
+        padding: 14px;
+        background: #fafbff;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        margin: 6px 0;
+        font-size: 14px;
+      }
+      .row .label {
+        color: #55627a;
+      }
+      .row .value {
+        font-weight: bold;
+        color: #1c274c;
+        text-align: right;
+      }
+      .tips {
+        background: #fff9e6;
+        border: 1px solid #ffe7a3;
+        color: #5d4a00;
+        padding: 12px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        margin: 16px 0;
+      }
+      .button {
+        display: inline-block;
+        padding: 12px 20px;
+        margin: 10px 8px 0 0;
+        background-color: #001e60;
+        color: #ffffff !important;
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 15px;
+      }
+      .button.secondary {
+        background: #eef2ff;
+        color: #001e60 !important;
+        border: 1px solid #cdd6ff;
+      }
+      .divider {
+        height: 1px;
+        background: #eeeeee;
+        margin: 20px 0;
+      }
+      .footer {
+        background-color: #f8f9fb;
+        padding: 14px;
+        text-align: center;
+        font-size: 13px;
+        color: #6a7280;
+      }
+      .footer a {
+        color: #001e60;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <img
+          src="https://ik.imagekit.io/dimdevs/TRAVL/logo-primary.png?updatedAt=1755944402803"
+          alt="TRAVL Logo"
+        />
+      </div>
+
+      <!-- Title -->
+      <div class="header-text">
+        <h1 class="header-title">Reminder Keberangkatan</h1>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <h2>Halo, Bapak/Ibu Pelanggan 👋</h2>
+        <p>
+          Ini adalah pengingat keberangkatan untuk perjalanan Anda bersama
+          <strong>TRAVL</strong>. Pastikan Anda tiba di titik penjemputan
+          <strong>lebih awal (±10–15 menit)</strong>.
+        </p>
+
+        <!-- Ringkasan Perjalanan -->
+        <div class="meta">
+          <div class="row">
+            <span class="label">Kode Booking</span>
+            <span class="value">CR-0825000011</span>
+          </div>
+          <div class="row">
+            <span class="label">Rute</span>
+            <span class="value">Cibitung → Cilegon</span>
+          </div>
+          <div class="row">
+            <span class="label">Tanggal Keberangkatan</span>
+            <span class="value">02 September 2025</span>
+          </div>
+          <div class="row">
+            <span class="label">Penjemputan</span>
+            <span class="value">Terminal Cibitung</span>
+          </div>
+          <div class="row">
+            <span class="label">Jumlah Penumpang</span>
+            <span class="value">1</span>
+          </div>
+          <div class="row">
+            <span class="label">Status Pembayaran</span>
+            <span class="value">PAID</span>
+          </div>
+        </div>
+
+        <!-- Info Kendaraan -->
+        <div class="meta" style="margin-top: 12px">
+          <div class="row">
+            <span class="label">Driver</span>
+            <span class="value">Andi</span>
+          </div>
+          <div class="row">
+            <span class="label">No. HP Driver</span>
+            <span class="value">0852-1111-2222</span>
+          </div>
+          <div class="row">
+            <span class="label">Armada</span>
+            <span class="value">Toyota Hiace • B 1234 CD</span>
+          </div>
+        </div>
+
+        <!-- Tips -->
+        <div class="tips">
+          <strong>Tips:</strong> Siapkan KTP/identitas saat penjemputan, periksa
+          kembali barang bawaan, dan gunakan pakaian yang nyaman.
+        </div>
+
+        <!-- CTA -->
+        <div>
+          <a href="https://travl.id/ticket/CR-0825000011" class="button"
+            >Lihat Tiket</a
+          >
+          <a
+            href="https://travl.id/booking/CR-0825000011"
+            class="button secondary"
+            >Kelola Pesanan</a
+          >
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Kontak -->
+        <p style="margin-top: 0">
+          Butuh bantuan? Hubungi kami via WhatsApp:
+          <a
+            target="_blank"
+            href="https://wa.me/6285224807658"
+            style="color: #001e60"
+            >+62-852-2480-7658</a
+          >
+          atau email
+          <a
+            target="_blank"
+            href="mailto:support@travl.id"
+            style="color: #001e60"
+            >support@travl.id</a
+          >.
+        </p>
+
+        <p style="font-size: 13px; color: #6a7280">
+          Catatan: Jadwal dapat berubah karena kondisi lalu lintas/cuaca. Kami
+          akan menginformasikan jika ada pembaruan.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>&copy; 2025 TRAVL. All rights reserved.</p>
+        <p>
+          Ingin berhenti menerima pengingat?
+          <a href="#">Kelola preferensi email</a>.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

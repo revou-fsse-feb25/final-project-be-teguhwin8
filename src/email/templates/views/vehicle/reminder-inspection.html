@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inspection Reminder</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://ik.imagekit.io/dimdevs/TRAVL/logo-single.png?updatedAt=1755944468037"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background-color: #001e60;
+        color: #ffffff;
+        padding: 20px;
+        text-align: center;
+      }
+      .header img {
+        max-width: 150px;
+        height: auto;
+      }
+      .header-text {
+        padding: 20px;
+        text-align: center;
+        border-bottom: 1px solid #dddddd;
+      }
+      .header-title {
+        margin: 0;
+        font-size: 24px;
+      }
+      .content {
+        padding: 20px;
+        color: #333333;
+      }
+      .content h2 {
+        font-size: 20px;
+        color: #001e60;
+        margin: 0 0 12px 0;
+      }
+      .content p {
+        font-size: 16px;
+        line-height: 1.5;
+        margin: 10px 0;
+      }
+      .summary {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+      }
+      .summary th,
+      .summary td {
+        text-align: left;
+        padding: 8px 10px;
+        font-size: 14px;
+        border-bottom: 1px solid #eeeeee;
+      }
+      .footer {
+        background-color: #f4f4f4;
+        padding: 10px;
+        text-align: center;
+        font-size: 14px;
+        color: #666666;
+      }
+      a {
+        color: #001e60;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <img
+          src="https://ik.imagekit.io/dimdevs/TRAVL/logo-primary.png?updatedAt=1755944402803"
+          alt="TRAVL"
+        />
+      </div>
+
+      <!-- Title -->
+      <div class="header-text">
+        <h1 class="header-title">Inspection Reminder</h1>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <h2>Halo Tim Operasional,</h2>
+        <p>
+          Ini pengingat bahwa <strong>uji KIR</strong> untuk kendaraan berikut
+          akan jatuh tempo pada <strong>{kir_expiry_date}</strong>:
+        </p>
+
+        <table
+          class="summary"
+          role="presentation"
+          cellpadding="0"
+          cellspacing="0"
+          width="100%"
+        >
+          <tr>
+            <th>Kendaraan</th>
+            <td>{vehicle_name} ({license_plate})</td>
+          </tr>
+          <tr>
+            <th>Tipe</th>
+            <td>{vehicle_type}</td>
+          </tr>
+        </table>
+
+        <p><strong>Aksi yang diperlukan:</strong></p>
+        <p>
+          • Booking jadwal KIR di Dishub setempat sebelum tanggal di atas.<br />
+          • Siapkan Buku Uji, STNK, dan dokumen pendukung.<br />
+          • Update status di sistem setelah selesai.
+        </p>
+
+        <p style="font-size: 13px; color: #6b7280; margin-top: 16px">
+          Email ini dikirim otomatis oleh sistem TRAVL. Jika Anda merasa tidak
+          berkepentingan, mohon abaikan email ini atau hubungi admin Anda.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>&copy; 2025 TRAVL. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>
