@@ -1,0 +1,56 @@
+<%- include('../../components/top', { title: 'Service Reminder' }) %>
+
+<h2>Halo, Tim Operasional!</h2>
+<p>
+  Kendaraan <strong><%= data?.vehicle?.name %></strong>
+  <span style="color: #6b7280">(<%= data?.vehicle?.licensePlate %>)</span>
+  mendekati <em>jadwal servis berkala</em>.
+</p>
+
+<p>
+  Status:&nbsp;
+  <span class="badge badge-pre"><%= data?.reminder?.window %></span>
+</p>
+
+<table
+  class="summary"
+  role="presentation"
+  cellpadding="0"
+  cellspacing="0"
+  width="100%"
+>
+  <tr>
+    <th>Odometer saat ini</th>
+    <td><%= data?.reminder?.odometerKm %> km</td>
+  </tr>
+  <tr>
+    <th>Jadwal servis berikutnya</th>
+    <td>
+      <%= (data?.reminder?.nextCycleThresholdKm || data?.reminder?.thresholdKm)
+      %> km
+    </td>
+  </tr>
+  <tr>
+    <th>Sisa jarak sebelum servis</th>
+    <td><%= data?.reminder?.distanceToNextKm %> km</td>
+  </tr>
+</table>
+
+<p>
+  <strong>Aksi yang disarankan:</strong><br />
+  • Booking slot bengkel sebelum mencapai
+  <strong
+    ><%= (data?.reminder?.thresholdKm || data?.reminder?.nextCycleThresholdKm)
+    %> km</strong
+  >.<br />
+  • Siapkan <strong>catatan servis terakhir</strong> & keluhan teknis (jika
+  ada).<br />
+  • <strong>Update rencana jadwal</strong> di sistem.
+</p>
+
+<p style="font-size: 13px; color: #6b7280; margin-top: 16px">
+  Email ini dikirim otomatis oleh sistem TRAVL. Jika Anda merasa tidak
+  berkepentingan, mohon abaikan email ini atau hubungi admin Anda.
+</p>
+
+<%- include('../../components/bottom', { year: 2025 }) %>

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "SimCard" ALTER COLUMN "lastUsageDate" SET DATA TYPE TEXT,
+ALTER COLUMN "lastPulsaDate" SET DATA TYPE TEXT;

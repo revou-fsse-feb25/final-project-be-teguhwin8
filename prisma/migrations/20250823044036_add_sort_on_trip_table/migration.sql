@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Trips" ADD COLUMN     "sort" INTEGER NOT NULL DEFAULT 0;

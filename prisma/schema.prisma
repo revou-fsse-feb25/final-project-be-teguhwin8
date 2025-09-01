@@ -1,0 +1,1664 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(uuid())
+  name            String?
+  email           String?
+  phoneNumber     String?
+  password        String?
+  type            String?
+  emailVerifiedAt DateTime?
+  phoneVerifiedAt DateTime?
+  roleId          String?
+  otp             Int?
+  pin             String?
+  operatorId      String?
+  isVerifiedOTP   Boolean   @default(false)
+
+  googleId                String?   @unique
+  googleAccessToken       String?   @db.Text
+  googleRefreshToken      String?   @db.Text
+  googleScopes            String?   @db.Text
+  googleTokenExpiryDate   DateTime?
+  syncWithGoogleCalendar  Boolean   @default(false)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime? @updatedAt
+  deletedAt       DateTime?
+
+  // Relationship
+  driver        Driver?
+  StaffProfile  StaffProfile?
+  customer      Customer?
+  role          Role?           @relation(fields: [roleId], references: [id])
+  operator      Library?        @relation(fields: [operatorId], references: [id])
+  NotificationAudienceUser  NotificationAudienceUser[]
+  NotificationRecipient     NotificationRecipient[]
+  devices       UserDevice[]
+  calendarEvents      CalendarEvent[]
+
+  ScheduleTripsUpdates ScheduleTripsUpdates[]
+
+  Articles      Articles[]
+  updatedAbouts About[]
+  Faq           Faq[]
+
+  updatedBanner     Banner[]
+  slidersCreated    Slider[]        @relation("SliderCreatedBy")
+  slidersUpdated    Slider[]        @relation("SliderUpdatedBy")
+  careerUpdated     CareerContent[] @relation("CareerUpdatedBy")
+  createdCareerJobs CareerJob[]     @relation("CreatedCareerJobs")
+  updatedCareerJobs CareerJob[]     @relation("UpdatedCareerJobs")
+}
+
+model UserDevice {
+  id                        String    @id @default(uuid())
+  user_id                   String?   @unique @db.VarChar(36)
+  app_id                    String?
+  device_id                 String?
+  language                  String?
+  time_zone                 String?
+  country                   String?
+  first_active_at           Int?
+  last_active_at            Int?
+  subscription_type         String?
+  subscription_enabled      Boolean   @default(true)
+  subscription_app_version  String?
+  subscription_device_model String?
+  subscription_os_version   String?
+  created_at                DateTime  @default(now())
+  updated_at                DateTime? @updatedAt
+  deleted_at                DateTime?
+  deletedAt                 DateTime?
+
+  // Relationship
+  user User? @relation(fields: [user_id], references: [id])
+}
+
+model Role {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // Relationship
+  user       User[]
+  permission RolePermission[]
+  audienceNotifications NotificationAudienceRole[]
+}
+
+model Permission {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // Relationship
+  role RolePermission[]
+}
+
+model RolePermission {
+  id           String    @id @default(uuid())
+  permissionId String
+  roleId       String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  // Relationship
+  role       Role       @relation(fields: [roleId], references: [id])
+  permission Permission @relation(fields: [permissionId], references: [id])
+}
+
+model Customer {
+  id              String    @id @default(uuid())
+  userId          String    @unique
+  code            String
+  nik             String?
+  image           String?   @db.Text
+  address         String?   @db.Text
+  city            String?   @db.Text
+  birthdayDate    String?
+  emergencyNumber String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  // Relationship
+  user User @relation(fields: [userId], references: [id])
+
+  CustomerBank        CustomerBank[]
+  CustomerPassenger   CustomerPassenger[]
+  Invoice             Invoice[]
+  Order               Order[]
+  CustomerTestimonial Testimonial[]
+  SubscriptionOrder   SubscriptionOrder[]
+}
+
+enum StaffStatus {
+  ACTIVE
+  INACTIVE
+  PROBATION
+  SABBATICAL
+  TERMINATED
+}
+
+enum ShiftType {
+  DAY
+  NIGHT
+  ROTATIONAL
+  FLEX
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERN
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  DIVORCED
+  WIDOWED
+  OTHER
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  UNDISCLOSED
+}
+
+model StaffProfile {
+  userId          String   @id
+  employeeNo      String?  @unique
+  fullName        String
+  preferredName   String?
+  workEmail       String?  @unique
+  personalEmail   String?
+  phone           String?
+  secondaryPhone  String?
+  jobTitle        String?
+  photoUrl        String?
+  gender          Gender?
+  dateOfBirth     DateTime?
+  maritalStatus   MaritalStatus?
+  department      String?
+  managerId       String?
+  manager         StaffProfile?  @relation("StaffManager", fields: [managerId], references: [userId])
+  reports         StaffProfile[] @relation("StaffManager")
+  grade           String?
+  costCenter      String?
+  workLocation    String?
+  workSchedule    String?
+  employmentType  EmploymentType?
+  shiftType       ShiftType?
+  hiredAt         DateTime?
+  probationEndAt  DateTime?
+  terminatedAt    DateTime?
+  status          StaffStatus   @default(ACTIVE)
+  terminationReason String?
+  address         String?
+  city            String?
+  country         String?
+  nationalId      String?
+  taxId           String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+  user            User @relation(fields: [userId], references: [id])
+
+  @@index([department])
+  @@index([status])
+  @@index([employmentType])
+  @@index([managerId])
+  @@index([deletedAt])
+  @@index([grade])
+  @@index([dateOfBirth])
+}
+
+model Testimonial {
+  id         String  @id @default(uuid())
+  customerId String
+  rating     Float?  @default(0.0)
+  message    String? @db.Text
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
+  @@index([deletedAt])
+}
+
+model About {
+  id                  String   @id @default(uuid())
+
+  imageBanner         String?  @db.Text
+  imageAbout          String?  @db.Text
+  
+  entityId            String?   @unique
+  entity              Entity?   @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  
+  lastUpdateAuthorId  String?
+  lastUpdateAuthor    User?    @relation(fields: [lastUpdateAuthorId], references: [id])
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  deletedAt           DateTime?
+
+  @@index([entityId])
+  @@index([lastUpdateAuthorId])
+}
+
+model Banner {
+  id String @id @default(uuid())
+
+  badgeBanner       String?
+  titleBanner       String?
+  descriptionBanner String? @db.Text
+  imageBanner       String? @db.Text
+
+  lastUpdateAuthorId String?
+  lastUpdateAuthor   User?   @relation(fields: [lastUpdateAuthorId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamp(6)
+}
+
+enum SliderStatus {
+  DRAFT
+  PUBLISH
+}
+model Slider {
+  id              String   @id @default(uuid())
+  imageUrl        String?  @db.Text
+  type            String?
+
+  status          SliderStatus @default(DRAFT)
+
+  entityId        String   @unique
+  entity          Entity   @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  createdById     String?
+  createdBy       User?    @relation("SliderCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  lastUpdatedById String?
+  lastUpdatedBy   User?    @relation("SliderUpdatedBy", fields: [lastUpdatedById], references: [id], onDelete: SetNull)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime? @db.Timestamp(6)
+
+  @@index([entityId])
+}
+
+model CareerContent {
+  id              String   @id @default(uuid())
+  sectionType     String?
+  image           String?  @db.Text
+
+  lastUpdatedById String?
+  lastUpdatedBy   User?    @relation("CareerUpdatedBy", fields: [lastUpdatedById], references: [id], onDelete: SetNull)
+
+  entityId        String   @unique
+  entity          Entity   @relation(fields: [entityId], references: [id])
+  data            CareerContentData[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime? @db.Timestamp(6)
+
+  @@index([sectionType])
+  @@index([entityId])
+}
+
+model CareerContentData {
+  id              String   @id @default(uuid())
+  careerContentId String
+  image           String?  @db.Text
+  careerContent   CareerContent @relation(fields: [careerContentId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime? @db.Timestamp(6)
+}
+
+model CareerJob {
+  id       String @id @default(uuid())
+  entityId String @unique
+  entity   Entity @relation(fields: [entityId], references: [id])
+
+  salaryRange String?
+  isActive    Boolean   @default(true)
+  postedAt    DateTime  @default(now())
+  expiredAt   DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  createdById     String?
+  lastUpdatedById String?
+  createdBy       User?   @relation("CreatedCareerJobs", fields: [createdById], references: [id], onDelete: SetNull)
+  lastUpdatedBy   User?   @relation("UpdatedCareerJobs", fields: [lastUpdatedById], references: [id], onDelete: SetNull)
+
+  applications CareerApplyJob[]
+}
+
+model CareerApplyJob {
+  id            String   @id @default(uuid())
+  jobId         String
+  fullName      String?
+  email         String
+  phone         String?
+  portfolio     String?
+  portfolioFile String?
+  linkedinLink  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  job CareerJob @relation(fields: [jobId], references: [id], onDelete: Restrict)
+
+  @@unique([jobId, email], name: "career_apply_unique_job_email")
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  PUSH
+  WHATSAPP
+  SMS
+  WEBHOOK
+}
+
+enum NotificationStatus {
+  PENDING
+  SCHEDULED
+  SENDING
+  PARTIAL
+  SENT
+  FAILED
+  CANCELED
+}
+
+enum DeliveryStatus {
+  PENDING
+  SENDING
+  SENT
+  FAILED
+  CANCELED
+  READ
+}
+
+enum AudienceScope {
+  GLOBAL     
+  ROLE       
+  USER      
+}
+
+model CalendarEvent {
+  id            String   @id @default(uuid())
+  googleEventId String   @unique
+  orderId       String?
+  bookingId     String?
+  userId        String
+  summary       String?
+  description   String?
+  location      String?
+  startDateTime DateTime
+  endDateTime   DateTime
+  timeZone      String
+  htmlLink      String?
+  attendees     Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [googleId])
+  order         Order?   @relation("OrderToCalendarEvent", fields: [orderId], references: [id])
+}
+
+model Notifications {
+  id           String                 @id @default(uuid())
+  entityId     String                 
+  data         Json?
+  channels     NotificationChannel[]
+  status       NotificationStatus     @default(PENDING)
+
+  scope        AudienceScope          @default(GLOBAL)
+  sendAt       DateTime?
+  subjectType  String?                
+  subjectId    String?                
+
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  deletedAt    DateTime?
+
+  entity          Entity                 @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  audienceRoles   NotificationAudienceRole[]
+  audienceUsers   NotificationAudienceUser[]
+  recipients      NotificationRecipient[]
+
+  @@index([scope, sendAt])
+  @@index([status, createdAt])
+  @@index([subjectType, subjectId])
+  @@index([entityId])
+}
+
+model NotificationAudienceRole {
+  id             String         @id @default(uuid())
+  notificationId String
+  roleId         String         
+
+  notification   Notifications  @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  role           Role           @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  @@unique([notificationId, roleId])
+  @@index([roleId])
+}
+
+model NotificationAudienceUser {
+  id             String         @id @default(uuid())
+  notificationId String
+  userId         String
+
+  notification   Notifications  @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, userId])
+  @@index([userId])
+}
+
+model NotificationRecipient {
+  id             String         @id @default(uuid())
+  notificationId String
+  userId         String
+  readAt         DateTime?
+  archivedAt     DateTime?
+  muted          Boolean        @default(false)
+
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  notification   Notifications  @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deliveries     NotificationDelivery[]
+
+  @@unique([notificationId, userId])
+  @@index([userId, createdAt])
+}
+
+model NotificationDelivery {
+  id               String               @id @default(uuid())
+  recipientId      String
+  channel          NotificationChannel
+  provider         String?              
+  toAddress        String?              
+  templateKey      String?
+  payload          Json?                
+  status           DeliveryStatus       @default(PENDING)
+  attemptCount     Int                  @default(0)
+  lastError        String?              @db.Text
+  sentAt           DateTime?
+  deliveredAt      DateTime?
+  readAt           DateTime?
+  meta             Json?
+
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  recipient        NotificationRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, channel])
+  @@index([status, createdAt])
+}
+
+model DeviceLogs {
+  id                         String    @id @default(uuid())
+  batteryVoltage             String? // Maps to "battery.voltage"
+  engineIgnitionStatus       String? // Maps to "engine.ignition.status"
+  eventPriorityEnum          String? // Maps to "event.priority.enum"
+  externalPowersourceVoltage String? // Maps to "external.powersource.voltage"
+  gnssStateEnum              String? // Maps to "gnss.state.enum"
+  gnssStatus                 String? // Maps to "gnss.status"
+  gsmOperatorCode            String? // Maps to "gsm.operator.code"
+  gsmSignalLevel             String? // Maps to "gsm.signal.level"
+  ident                      String? // Maps to "ident"
+  movementStatus             String? // Maps to "movement.status"
+  positionAltitude           String? // Maps to "position.altitude"
+  positionDirection          String? // Maps to "position.direction"
+  positionHdop               String? // Maps to "position.hdop"
+  positionLatitude           String? // Maps to "position.latitude"
+  positionLongitude          String? // Maps to "position.longitude"
+  positionPdop               String? // Maps to "position.pdop"
+  positionSatellites         String? // Maps to "position.satellites"
+  positionSpeed              String? // Maps to "position.speed"
+  positionValid              String? // Maps to "position.valid"
+  serverTimestamp            String? // Maps to "server.timestamp"
+  sleepModeEnum              String? // Maps to "sleep.mode.enum"
+  vehicleMileage             String? // Maps to "vehicle.mileage"
+  read_at                    String? // Maps to "date"
+  distance                   String? // Maps to "date"
+  createdAt                  DateTime  @default(now())
+  updatedAt                  DateTime? @updatedAt
+  deletedAt                  DateTime?
+}
+
+model Library {
+  id          String    @id @default(uuid())
+  code        String?
+  master      String?
+  values      String?
+  name        String?
+  description String?   @db.Text
+  status      String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  // Relationships
+  operatorVehicles Vehicle[] @relation("operatorData")
+  typeVehicles     Vehicle[] @relation("typeData")
+  brandDevice      Device[]  @relation("brandData")
+  typeDevice       Device[]  @relation("typeData")
+  telcoData        SimCard[] @relation("telcoData")
+  typeData         SimCard[] @relation("typeData")
+  operatorData     Driver[]  @relation("operatorData")
+  shiftData        Driver[]  @relation("shiftData")
+  route            Route[]   @relation("operatorData")
+  SimCard          SimCard[] @relation("operatorData")
+  Point            Point[]   @relation("operatorData")
+
+  User User[]
+
+  Device Device[] @relation("operatorData")
+  geolocations Geolocation[]
+}
+
+model Device {
+  id           String         @id @default(uuid())
+  simcardId    String?        @unique
+  operator     String?
+  brand        String?
+  type         String?
+  name         String?
+  imei         String?
+  code         String?
+  lastLat      String?
+  lastLong     String?
+  lastLongDate String?
+  initialLat   String?
+  initialLong  String?
+  initialDate  String?
+  mac          String?
+  description  String?        @db.Text
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime?
+  status       SimCardStatus?
+
+  // Relationships
+  Vehicle      Vehicle[]
+  brandData    Library?  @relation("brandData", fields: [brand], references: [id])
+  typeData     Library?  @relation("typeData", fields: [type], references: [id])
+  simCard      SimCard?  @relation("SimCardToDevice", fields: [simcardId], references: [id])
+  operatorData Library?  @relation("operatorData", fields: [operator], references: [id])
+}
+
+model SimCard {
+  id               String         @id @default(uuid())
+  deviceId         String?        @unique
+  operator         String?
+  telco            String?
+  type             String?
+  msisdNumber      String?
+  simNumber        String?
+  description      String?        @db.Text
+  activeUntil      String?
+  lastUsage        String?
+  lastUsageDate    String?
+  initialQuota     String?
+  lastQuota        String?
+  lastQuotaBalance String?
+  lastPulsaBalace  Float?
+  lastPulsaDate    String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  deletedAt        DateTime?
+  status           SimCardStatus?
+
+  // Relationships
+  telcoData    Library? @relation("telcoData", fields: [telco], references: [id])
+  typeData     Library? @relation("typeData", fields: [type], references: [id])
+  device       Device?  @relation("SimCardToDevice")
+  operatorData Library? @relation("operatorData", fields: [operator], references: [id])
+}
+
+enum SimCardStatus {
+  IN_USE
+  NOT_IN_USE
+}
+
+model Vehicle {
+  id                              String    @id @default(uuid())
+  driverId                      String?
+  deviceId                      String?
+  deviceImei                    String?
+  operator                      String?
+  type                          String?
+  name                          String?
+  licensePlate                  String?
+  routeId                       String?
+  description                   String?   @db.Text
+  statusDevice                  String?   @default("INACTIVE")
+  totalDistanceMeter            Float?    @default(0)
+  totalDistanceKiloMeter        Float?    @default(0)
+  limitOverSpeed                Float?    @default(0)
+  createdAt                     DateTime  @default(now())
+  latDateDevice                 DateTime?
+  seat                          Int?
+  updatedAt                     DateTime  @updatedAt
+  deletedAt                     DateTime?
+  odometerKm                    Float?    @default(0)
+  serviceReminderIntervalKm     Int?      @default(0)
+  serviceLastNotifiedCycleIndex Int?
+  serviceLastNotifiedKm         Float?
+  inspectionExpiryDate          DateTime?
+  registrationExpiryDate        DateTime?
+  notes                         String?   @db.Text
+  statusFleet                   String?
+  thumbnail                     String?   @db.Text
+
+  // Relationships
+  operatorData Library? @relation("operatorData", fields: [operator], references: [id])
+  typeData     Library? @relation("typeData", fields: [type], references: [id])
+  driverData   Driver?  @relation(fields: [driverId], references: [id])
+  device       Device?  @relation(fields: [deviceId], references: [id])
+  route        Route?   @relation(fields: [routeId], references: [id])
+
+  Driver        Driver[]        @relation("vehicleData")
+  Overspeed     Overspeed[]
+  AnomaliDevice AnomaliDevice[]
+  Schedules     Schedules[]
+  ScheduleTrips ScheduleTrips[]
+  vehicleSeat   VehicleSeat[]
+  Trips         Trips[]
+
+  ScheduleTemplate ScheduleTemplate[]
+}
+
+model Driver {
+  id              String         @id @default(uuid())
+  operator        String?
+  shift           String?
+  code            String?
+  name            String?
+  vehicleId       String?        @unique
+  mobilePhone     String?
+  description     String?        @db.Text
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?
+  status          SimCardStatus?
+  userId          String?         @unique
+  nik             String?         @unique
+  simNumber       String?         @unique
+  simPhotoUrl     String?         @db.Text
+  ktpPhotoUrl     String?         @db.Text
+  simExpiryDate   DateTime?
+
+  user          User?             @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  operatorData  Library?          @relation("operatorData", fields: [operator], references: [id])
+  shiftData     Library?          @relation("shiftData", fields: [shift], references: [id])
+  vehicleData   Vehicle?          @relation("vehicleData", fields: [vehicleId], references: [id])
+
+  Vehicle       Vehicle[]
+  ScheduleTrips ScheduleTrips[]
+  Trips         Trips[]
+
+  ScheduleTemplate ScheduleTemplate[]
+
+  @@index([userId])
+}
+
+model Route {
+  id             String    @id @default(uuid())
+  operator       String?
+  code           String?
+  name           String?
+  numberOfDriver Float?    @default(0)
+  numberOfToll   Float?    @default(0)
+  numberOfFuel   Float?    @default(0)
+  numberOfOther  Float?    @default(0)
+  feeDriver      Float?    @default(0)
+  feeToll        Float?    @default(0)
+  feeFuel        Float?    @default(0)
+  feeOther       Float?    @default(0)
+  totalFeeDriver Float?    @default(0)
+  totalFeeToll   Float?    @default(0)
+  totalFeeFuel   Float?    @default(0)
+  totalFeeOther  Float?    @default(0)
+  description    String?   @db.Text
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  // Relationships
+  Vehicle           Vehicle[]
+  operatorData      Library?            @relation("operatorData", fields: [operator], references: [id])
+  RoutePoint        RoutePoint[]
+  Schedules         Schedules[]
+  ScheduleTripPoint ScheduleTripPoint[]
+  Trips             Trips[]
+  TripPoint         TripPoint[]
+  Price             Price[]
+  Voucher           Voucher[]
+
+  ScheduleTemplatePoint ScheduleTemplatePoint[]
+}
+
+model Point {
+  id             String    @id @default(uuid())
+  idOTA          Int       @unique @default(autoincrement())
+  operator       String?
+  pointCode      String?
+  name           String?
+  description    String?   @db.Text
+  lat            String?
+  long           String?
+  city           String?
+  image          String?   @db.Text
+  operatingHours String?
+  address        String?   @db.Text
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  // Relationships
+  operatorData Library? @relation("operatorData", fields: [operator], references: [id])
+
+  RoutePoint        RoutePoint[]
+  ScheduleTripPoint ScheduleTripPoint[]
+  TripPoint         TripPoint[]
+
+  arrivalTrips   Trips[] @relation("ArrivalPoint")
+  departureTrips Trips[] @relation("DeparturePoint")
+
+  ScheduleTemplatePoint ScheduleTemplatePoint[]
+
+  RoutePairArrival RoutePair[] @relation("arrival")
+  RoutePairDeparture RoutePair[] @relation("departure")
+  geolocations          Geolocation[]
+}
+
+model RoutePair {
+  id             String    @id @default(uuid())
+  idOTA          Int       @unique @default(autoincrement())
+  departureId    String?
+  arrivalId      String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  // Relationships
+  departure Point? @relation("departure", fields: [departureId], references: [id])
+  arrival   Point? @relation("arrival", fields: [arrivalId], references: [id])
+}
+
+model RoutePoint {
+  id        String    @id @default(uuid())
+  routeId   String?
+  pointId   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // Relationships
+  route Route? @relation(fields: [routeId], references: [id])
+  point Point? @relation(fields: [pointId], references: [id])
+}
+
+model Overspeed {
+  id        String    @id @default(uuid())
+  datetime  String?
+  vehicleId String?
+  speed     String?
+  status    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // Relationships
+  vehicle Vehicle? @relation(fields: [vehicleId], references: [id])
+}
+
+model OverSpeedlimit {
+  id            String    @id @default(uuid())
+  speedWarning  Int?      @default(0)
+  speedLimit    Int?      @default(0)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+}
+
+enum GeolocationStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Geolocation {
+  id          String            @id @default(uuid())
+  name        String?
+  address     String?           @db.Text
+
+  longitude   Float
+  latitude    Float
+  radius      Float
+
+  pointId     String
+  operatorId  String
+  operator    Library           @relation(fields: [operatorId], references: [id])
+  point       Point              @relation(fields: [pointId], references: [id])
+
+  status      GeolocationStatus @default(ACTIVE)
+
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  deletedAt   DateTime?
+}
+
+model AnomaliDevice {
+  id                 String    @id @default(uuid())
+  vehicleId          String?
+  vehicleImei        String?
+  lastLat            String?
+  lastLong           String?
+  newLat             String?
+  newLong            String?
+  date               DateTime?
+  totalDistanceMeter Float?    @default(0)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  // Relationships
+  vehicle Vehicle? @relation(fields: [vehicleId], references: [id])
+}
+
+model Features {
+  id          String    @id @default(uuid())
+  name        String
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  // Relationships
+  userManuals UserManual[]
+}
+
+model UserManual {
+  id          String    @id @default(uuid())
+  featuresId  String?
+  title       String
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  // Relationships
+  features Features?        @relation(fields: [featuresId], references: [id], onDelete: SetNull)
+  steps    UserManualStep[]
+}
+
+model UserManualStep {
+  id           String    @id @default(uuid())
+  userManualId String
+  title        String
+  stepNumber   Int
+  description  String
+  files        String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  // Relationships
+  userManual UserManual @relation(fields: [userManualId], references: [id], onDelete: Cascade)
+}
+
+model VehicleSeat {
+  id        String    @id @default(uuid())
+  vehicleId String
+  code      String?
+  row       String?
+  column    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // Relationships
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model Schedules {
+  id        String    @id @default(uuid())
+  routeId   String
+  vehicleId String
+  days      String
+  isActive  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // Relationships
+  route   Route   @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  ScheduleTrips ScheduleTrips[]
+
+  ScheduleTemplate ScheduleTemplate[]
+}
+
+model ScheduleTemplate {
+  id               String    @id @default(uuid())
+  vehicleId        String
+  driverId         String
+  scheduleId       String
+  pointDepartureId String
+  pointArrivalId   String
+  departureTime    String
+  arrivalTime      String
+  description      String @db.Text
+  price            Float  @default(0)
+  pricePackage     Float  @default(0)
+  isSale           Boolean @default(false)
+  isRound          Boolean @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  // Relationships
+  schedule Schedules @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  vehicle  Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  driver   Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  ScheduleTemplatePoint ScheduleTemplatePoint[]
+}
+
+model ScheduleTemplatePoint {
+  id                 String    @id @default(uuid())
+  scheduleTemplateId String
+  routeId            String
+  pointId            String
+  isDeparture        Boolean   @default(false)
+  isArrival          Boolean   @default(false)
+  departureTime      String
+  sort               Int       @default(0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  // Relationships
+  scheduleTemplate ScheduleTemplate @relation(fields: [scheduleTemplateId], references: [id], onDelete: Cascade)
+  route            Route            @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  point            Point            @relation(fields: [pointId], references: [id], onDelete: Cascade)
+}
+
+
+// NOT USE AGAIN
+// 
+// 
+model ScheduleTrips {
+  id            String    @id @default(uuid())
+  scheduleId    String
+  vehicleId     String
+  driverId      String
+  departureTime String
+  arrivalTime   String
+  isActive      Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  // Relationships
+  schedule Schedules @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  vehicle  Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  driver   Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  ScheduleTripsUpdates ScheduleTripsUpdates[]
+  ScheduleTripSeat     ScheduleTripSeat[]
+  ScheduleTripPoint    ScheduleTripPoint[]
+}
+
+model ScheduleTripSeat {
+  id             String    @id @default(uuid())
+  scheduleTripId String
+  code           String?
+  row            String?
+  column         String?
+  isHotSeat      Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  // Relationships
+  scheduleTrip ScheduleTrips @relation(fields: [scheduleTripId], references: [id], onDelete: Cascade)
+
+  ScheduleTripSeatUpdates ScheduleTripSeatUpdates[]
+}
+
+model ScheduleTripPoint {
+  id             String    @id @default(uuid())
+  scheduleTripId String
+  routeId        String
+  pointId        String
+  isDeparture    Boolean   @default(false)
+  isArrival      Boolean   @default(false)
+  departureTime  String
+  arrivalTime    String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  // Relationships
+  scheduleTrip ScheduleTrips @relation(fields: [scheduleTripId], references: [id], onDelete: Cascade)
+  route        Route         @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  point        Point         @relation(fields: [pointId], references: [id], onDelete: Cascade)
+
+  ScheduleTripPointUpdates ScheduleTripPointUpdates[]
+}
+
+model ScheduleTripsUpdates {
+  id             String    @id @default(uuid())
+  scheduleTripId String
+  driverId       String
+  date           DateTime
+  departureTime  String
+  arrivalTime    String
+  basePrice      Decimal   @db.Decimal(12, 2)
+  finalPrice     Decimal   @db.Decimal(12, 2)
+  description    String    @db.Text
+  updatedBy      String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  // Relationships
+  scheduleTrip ScheduleTrips @relation(fields: [scheduleTripId], references: [id], onDelete: Cascade)
+  updateby     User          @relation(fields: [updatedBy], references: [id], onDelete: Cascade)
+}
+
+model ScheduleTripSeatUpdates {
+  id                 String    @id @default(uuid())
+  scheduleTripSeatId String
+  code               String?
+  row                String?
+  column             String?
+  basePrice          Decimal   @db.Decimal(12, 2)
+  finalPrice         Decimal   @db.Decimal(12, 2)
+  updatedBy          String
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  // Relationships
+  scheduleTripSeat ScheduleTripSeat @relation(fields: [scheduleTripSeatId], references: [id], onDelete: Cascade)
+}
+
+model ScheduleTripPointUpdates {
+  id                  String    @id @default(uuid())
+  scheduleTripPointId String
+  isDeparture         Boolean   @default(false)
+  isArrival           Boolean   @default(false)
+  departureTime       String
+  arrivalTime         String
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime?
+
+  // Relationships
+  scheduleTripPoint ScheduleTripPoint @relation(fields: [scheduleTripPointId], references: [id], onDelete: Cascade)
+}
+
+// 
+// 
+// 
+
+enum statusTrip {
+  PENDING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+model Trips {
+  id             String    @id @default(uuid())
+  idOTA          Int       @unique @default(autoincrement())
+  vehicleId      String
+  driverId       String
+  routeId        String // main route
+  code           String
+  codeSPJ        String?
+  date           String
+  departureId    String?
+  departureCode  String
+  departureName  String
+  departureCity  String?
+  arivalId       String?
+  arivalCode     String
+  arivalName     String
+  arivalCity     String?
+  driverCode     String
+  driverName     String
+  vehicleLicense String
+  vehicleName    String
+  feeDriver      Float?    @default(0)
+  feeToll        Float?    @default(0)
+  feeFuel        Float?    @default(0)
+  feeOther       Float?    @default(0)
+  feeTotal       Float?    @default(0)
+  departureTime  String
+  arrivalTime    String
+  up1Price       Float     @default(0)
+  up2Price       Float     @default(0)
+  basePrice      Float     @default(0)
+  down1Price     Float     @default(0)
+  down2Price     Float     @default(0)
+  discount       Float     @default(0)
+  status         statusTrip @default(PENDING)
+  departureTimeActual         String?
+  arrivalTimeActual           String?
+  duration        Int?     @default(0)
+  seatCapacity    Int?     @default(0)
+  ticketSold      Int?     @default(0)
+  checkIn         Int?     @default(0)
+  package         Int?     @default(0)
+  isRound         Boolean  @default(false)
+  sort            Int      @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  // Relationships
+  route     Route   @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  driver    Driver  @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  arrival   Point?  @relation("ArrivalPoint", fields: [arivalId], references: [id], onDelete: Cascade)
+  departure Point?  @relation("DeparturePoint", fields: [departureId], references: [id], onDelete: Cascade)
+
+  TripSeat  TripSeat[]
+  TripPoint TripPoint[]
+  Order     Order[]
+}
+
+enum statusTripSeat {
+  AVAILABLE
+  ONHOLD
+  PAID
+  CHECKIN
+  BLOCKED
+}
+
+model TripSeat {
+  id        String @id @default(uuid())
+  tripId    String
+  code      String?
+  row       String?
+  column    String?
+  isAvail   Boolean        @default(true)
+  status    statusTripSeat @default(AVAILABLE)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  deletedAt DateTime?
+
+  // Relationships
+  trip Trips @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  OrderItem OrderItem[]
+}
+
+model TripPoint {
+  id            String    @id @default(uuid())
+  tripId        String
+  routeId       String
+  pointId       String
+  isDeparture   Boolean   @default(false)
+  isArrival     Boolean   @default(false)
+  departureTime String
+  arrivalTime   String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  // Relationships
+  trip  Trips @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  route Route @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  point Point @relation(fields: [pointId], references: [id], onDelete: Cascade)
+}
+
+model Price {
+  id         String    @id @default(uuid())
+  name       String
+  routeId    String
+  up1Price   Float     @default(0)
+  up2Price   Float     @default(0)
+  basePrice  Float     @default(0)
+  down1Price Float     @default(0)
+  down2Price Float     @default(0)
+  discount   Float     @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  // Relationships
+  route Route @relation(fields: [routeId], references: [id], onDelete: Cascade)
+}
+
+enum discountType {
+  PERCENTAGE
+  AMOUNT
+}
+
+enum voucherType {
+  TRIP
+  SUBSCRIPTION
+}
+
+model Voucher {
+  id      String  @id @default(uuid())
+  routeId String?
+  code    String?
+  name    String?
+
+  quota   Int     @default(0)
+  price   Int     @default(0)
+
+  description  String?      @db.Text
+  startDate    String?
+  endDate      String?
+  expiryDate   String?
+  voucherType  voucherType
+  discountType discountType
+  usageLimit   Int          @default(0)
+  discount     Int          @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+
+  // Relationships
+  route Route? @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
+  Order             Order[]
+  SubscriptionOrder SubscriptionOrder[]
+}
+
+model CustomerBank {
+  id          String    @id @default(uuid())
+  customerId  String
+  nameAccount String?
+  codeAccount String
+  nameBank    String
+  codeBank    String    @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  // Relationships
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  Order Order[]
+}
+
+model CustomerPassenger {
+  id          String    @id @default(uuid())
+  customerId  String
+  name        String?
+  phoneNumber String?
+  address     String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  // Relationships
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+model Invoice {
+  id         String @id @default(uuid())
+  code       String
+  customerId String
+  totalPrice Float  @default(0)
+  date       String
+
+  // For Xendit
+
+  external_id          String    @unique
+  status               String // PENDING, PAID, EXPIRED
+  merchant_name        String
+  amount               Float     @default(0)
+  payer_email          String?
+  description          String?   @db.Text
+  paid_amount          Float     @default(0)
+  currency             String?
+  paid_at              String?
+  payment_method       String?
+  payment_channel      String?
+  payment_destination  String?
+  success_redirect_url String?
+  failure_redirect_url String?
+  bank_code            String?
+  ewallet_type         String?
+  url_payment          String?
+  data                 Json?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  deletedAt            DateTime?
+
+  // Relationships
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  Order             Order[]
+  SubscriptionOrder SubscriptionOrder?
+}
+
+model Order {
+  id             String    @id @default(uuid())
+  code           String
+  customerBankId String?
+  voucherId      String?
+  customerId     String
+  invoiceId      String
+  tripId         String
+  date           String
+  canceledDate   String?
+  rescheduleDate String?
+  status         String // PENDING, PAID, RESCHEDULED, CANCELLED, REFUNDED
+  totalPrice     Float     @default(0)
+  discount       Float     @default(0)
+  subtotal       Float     @default(0)
+  cancelReason   String?   @db.Text
+  dataRefund     Json?
+
+  hasCalendarEvent Boolean   @default(false)
+  calendarProvider String? // GOOGLE, OUTLOOK, ICAL, etc.
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  // Relationships
+  customer     Customer?     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  trip         Trips?        @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  invoice      Invoice?      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  voucher      Voucher?      @relation(fields: [voucherId], references: [id], onDelete: Cascade)
+  customerBank CustomerBank? @relation(fields: [customerBankId], references: [id], onDelete: Cascade)
+
+  OrderItem OrderItem[]
+  calendarEvents  CalendarEvent[] @relation("OrderToCalendarEvent")
+}
+
+model OrderItem {
+  id          String    @id @default(uuid())
+  code        String
+  tripSeatId  String
+  orderId     String
+  name        String
+  address     String?   @db.Text
+  phoneNumber String?
+  price       Float     @default(0)
+  discount    Float     @default(0)
+  totalPrice  Float     @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  // Relationships
+  order Order?    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  seat  TripSeat? @relation(fields: [tripSeatId], references: [id], onDelete: Cascade)
+}
+
+enum ArticleStatus {
+  draft
+  approved
+  rejected
+  deleted
+}
+
+model Articles {
+  id       String @id @default(uuid())
+  entityId String @unique
+  entity   Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  authorId String?
+  author   User?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  thumbnailUrl String?       @db.Text
+  highlighted  Boolean       @default(false)
+  views        Int           @default(0)
+  status       ArticleStatus @default(draft)
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  // Relasi tags (jika pakai normalisasi)
+  articleTags ArticleTag[]
+
+  @@index([entityId])
+  @@index([authorId])
+}
+
+model FaqContent {
+  id         String    @id @default(uuid())
+  // title      String?
+  // disclaimer String?
+  entityId    String @unique
+  entity      Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  link        String?   @db.Text
+  image       String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([entityId])
+}
+
+enum FaqStatus {
+  draft
+  approved
+  rejected
+  deleted
+}
+
+model Faq {
+  id       String @id @default(uuid())
+  entityId String @unique
+  entity   Entity @relation(fields: [entityId], references: [id])
+
+  authorId  String?
+  category  String?
+  status    FaqStatus @default(draft)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  author    User?     @relation(fields: [authorId], references: [id], onDelete: SetNull)
+}
+
+model ContactContent {
+  id        String    @id @default(uuid())
+  address   String?
+  email     String?
+  phone     String?
+  whatsapp  String?
+  instagram String?
+  facebook  String?
+  twitter   String?
+  tiktok    String?
+  youtube   String?
+  website   String?
+  latitude  Float?
+  longitude Float?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model ContactMessage {
+  id        String    @id @default(uuid())
+  name      String?
+  email     String?
+  phone     String?
+  subject   String?
+  message   String?
+  isRead    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Language {
+  id           Int           @id @default(autoincrement())
+  code         String        @unique
+  name         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  translations Translation[]
+}
+
+model Translation {
+  id          Int      @id @default(autoincrement())
+  entityId    String
+  entity      Entity   @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  languageId  Int
+  language    Language @relation(fields: [languageId], references: [id])
+  field       String
+  translation String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([entityId, languageId, field])
+  @@index([entityId])
+  @@index([languageId])
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model SubscriptionOrder {
+  id                 String             @id @default(uuid())
+  customerId         String
+  voucherId          String
+  invoiceId          String?            @unique
+  orderCode          String             @unique
+  amount             Int
+  duration           Int
+  expiredDate        DateTime?
+  paymentStatus      PaymentStatus      @default(PENDING)
+  subscriptionStatus SubscriptionStatus @default(INACTIVE)
+  startDate          DateTime
+  endDate            DateTime
+  renewalDate        DateTime?
+  paymentGatewayId   String?            @db.Text
+  paymentUrl         String?            @db.Text
+  phone              String?
+  name               String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  deletedAt          DateTime?
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  voucher  Voucher  @relation(fields: [voucherId], references: [id], onDelete: Cascade)
+  invoice  Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+}
+
+model Entity {
+  id        String   @id @default(uuid())
+  type      String
+  createdAt DateTime @default(now())
+
+  translations      Translation[]
+  notifications     Notifications[]
+  faq               Faq?
+  careerJob         CareerJob?
+  Articles          Articles?
+  Tag               Tag?
+  About             About?
+  Policy            Policy?
+  slider            Slider?
+  FaqContent        FaqContent?
+  CareerContent     CareerContent?
+}
+
+model Tag {
+  id       String @id @default(uuid())
+  entityId String @unique
+  entity   Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articleTags ArticleTag[]
+
+  @@index([entityId])
+}
+
+model ArticleTag {
+  articleId String
+  tagId     String
+
+  article Articles @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag     Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+  @@index([tagId])
+}
+
+enum PolicyType {
+  RESCHEDULE_POLICY
+  REFUND_CANCEL_POLICY
+  TERMS_AND_CONDITIONS
+  TERMS_AND_CONDITIONS_GENERAL
+  TERMS_AND_CONDITIONS_SUBSCRIPTION
+  TERMS_AND_CONDITIONS_PROMO
+  DISCLAIMER_PROMO
+  PRIVACY_POLICY_GENERAL
+  COOKIE_POLICY_GENERAL
+}
+
+model Policy {
+  id        String     @id @default(uuid())
+  type      PolicyType @unique
+  entityId  String     @unique
+  entity    Entity     @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}

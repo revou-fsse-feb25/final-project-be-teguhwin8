@@ -1,0 +1,105 @@
+<%- include('../../../components/top', { title: 'Reminder Keberangkatan' }) %>
+
+<h2>Halo, Bapak/Ibu Pelanggan 👋</h2>
+<p>
+  Ini adalah pengingat keberangkatan untuk perjalanan Anda bersama
+  <strong>TRAVL</strong>. Pastikan Anda tiba di titik penjemputan
+  <strong>lebih awal (±10–15 menit)</strong>.
+</p>
+
+<!-- Ringkasan Perjalanan -->
+<table class="meta" role="presentation" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td class="label">Kode Booking</td>
+    <td class="value" align="right"><%= data.bookingCode %></td>
+  </tr>
+  <tr>
+    <td class="label">Rute</td>
+    <td class="value" align="right"><%= data.routeLabel %></td>
+  </tr>
+  <tr>
+    <td class="label">Tanggal Keberangkatan</td>
+    <td class="value" align="right"><%= data.departureDateLabel %></td>
+  </tr>
+  <tr>
+    <td class="label">Penjemputan</td>
+    <td class="value" align="right"><%= data.pickupName || '-' %></td>
+  </tr>
+  <tr>
+    <td class="label">Jumlah Penumpang</td>
+    <td class="value" align="right"><%= data.passengerCount %></td>
+  </tr>
+  <tr>
+    <td class="label">Status Pembayaran</td>
+    <td class="value" align="right"><%= data.paymentStatus %></td>
+  </tr>
+</table>
+
+<!-- Data Penumpang -->
+<% if (Array.isArray(data.passengers) && data.passengers.length) { %>
+<table class="meta" role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-top:12px">
+  <% data.passengers.forEach(function(p, idx) { %>
+  <tr>
+    <td class="label">Penumpang <%= idx + 1 %></td>
+    <td class="value" align="right">
+      <%= p.name || '-' %>
+      <% if (p.seat) { %> • Kursi: <%= p.seat %><% } %>
+      <% if (p.phone) { %> • <%= p.phone %><% } %>
+    </td>
+  </tr>
+  <% }); %>
+</table>
+<% } %>
+
+<!-- Info Kendaraan -->
+<% if (data.driverName || data.driverPhone || data.vehicleLabel) { %>
+<table class="meta" role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-top:12px">
+  <% if (data.driverName) { %>
+  <tr>
+    <td class="label">Driver</td>
+    <td class="value" align="right"><%= data.driverName %></td>
+  </tr>
+  <% } %>
+  <% if (data.driverPhone) { %>
+  <tr>
+    <td class="label">No. HP Driver</td>
+    <td class="value" align="right"><%= data.driverPhone %></td>
+  </tr>
+  <% } %>
+  <% if (data.vehicleLabel) { %>
+  <tr>
+    <td class="label">Armada</td>
+    <td class="value" align="right"><%= data.vehicleLabel %></td>
+  </tr>
+  <% } %>
+</table>
+<% } %>
+
+<!-- Tips -->
+<div class="tips" style="margin-top:12px">
+  <strong>Tips:</strong> Siapkan KTP/identitas saat penjemputan, periksa kembali
+  barang bawaan, dan gunakan pakaian yang nyaman.
+</div>
+
+<!-- CTA -->
+<div style="margin-top:12px">
+  <a href="<%= data.ticketUrl %>" class="button">Lihat Tiket</a>
+  <a href="<%= data.manageUrl %>" class="button secondary">Kelola Pesanan</a>
+</div>
+
+<div class="divider"></div>
+
+<!-- Kontak -->
+<p style="margin-top: 0">
+  Butuh bantuan? Hubungi kami via WhatsApp:
+  <a target="_blank" href="https://wa.me/6285224807658" style="color: #001e60">+62-852-2480-7658</a>
+  atau email
+  <a target="_blank" href="mailto:support@travl.id" style="color: #001e60">support@travl.id</a>.
+</p>
+
+<p style="font-size: 13px; color: #6a7280">
+  Catatan: Jadwal dapat berubah karena kondisi lalu lintas/cuaca. Kami akan
+  menginformasikan jika ada pembaruan.
+</p>
+
+<%- include('../../../components/bottom', { year: new Date().getFullYear() }) %>

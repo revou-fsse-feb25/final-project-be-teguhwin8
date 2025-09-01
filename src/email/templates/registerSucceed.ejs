@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <%- include("./shared/header.ejs") %>
+  <body style="background-image: url('https://hijaudigital.s3.ap-southeast-3.amazonaws.com/static-file/asset/iPad+Pro+11_+-+1+(2).png'); background-size: cover;  margin: 0; background-repeat: no-repeat; background-position: center; height: 100vh;">
+    <br><br><br><br>
+    <div style="width: 100%; text-align: center;">
+      <img src="https://myrootsy.hijaudigital.com/_next/image?url=%2Fassets%2Fimages%2Flogo-my-rootsy-4x.png&w=640&q=100" alt="" style="width: 200px; display: inline-block;">
+    </div>
+    <table
+      class="email-wrapper"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      role="presentation"
+      style="background: transparent !important;"
+    >
+      <tr>
+        <td align="center">
+          <table
+            class="email-content"
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            role="presentation"
+            style="background: transparent !important;"
+          >
+            <!-- Email Body -->
+            <tr>
+              <td
+                class="email-body"
+                width="570"
+                cellpadding="0"
+                cellspacing="0"
+                style="background: transparent !important;"
+              >
+                <table
+                  class="email-body_inner"
+                  align="center"
+                  style="width: 100%; background: transparent !important;"
+                  cellpadding="0"
+                  cellspacing="0"
+                  role="presentation"
+                >
+                  <!-- Body content -->
+                  <tr>
+                    <td class="content-cell">
+                      <div class="f-fallback">
+                        <br><br><br><br>
+                        <p style="line-height: 35px; background: transparent !important; font-family: sans-serif;">
+                          Hai <%= locals.name %>!<br /><br />
+                          Kode verifikasi anda adalah : <b><%= locals.otp %></b> <br /><br />
+                          Terima kasih sudah bergabung dengan MyRootsy.<br />
+                          Sekarang, Anda dapat mengakses fitur lengkap kami dan
+                          memulai petualangan pembelajaran bersama anak Anda.<br />
+                          Selalu cek aplikasi untuk pembaruan terbaru!<br />
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <%- include("./shared/footer.ejs") %>
+              <br><br><br><br>
+              <br><br><br><br>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

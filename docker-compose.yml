@@ -1,0 +1,9 @@
+services:
+  tms-api:
+    image: registry.gitlab.com/hijau-digital/tms/api/tms-api:latest
+    container_name: tms-api
+    env_file:
+      - .env
+    ports:
+      - "9000:9000"
+    restart: always

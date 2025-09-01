@@ -1,0 +1,7 @@
+# Dockerfile.ci
+FROM docker:24-cli
+
+# Install nodejs & npm & tools
+RUN apk add --no-cache nodejs npm bash git openssl
+
+WORKDIR /app
